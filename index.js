@@ -24,7 +24,12 @@ app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
-})
+});
+
+app.get('/messages', async (req, res) => {
+  const rows = await db.all("SELECT * FROM messages");
+  res.json(rows);
+});
 
 app.post('/messages', async (req, res) => {
   const { message } = req.body;
