@@ -28,8 +28,9 @@ app.post('/messages', async (req, res) => {
   const { message } = req.body;
   console.log(`Received message: ${message}`);
 
+  let response;
   try {
-    const response = await db.collection("messages").insertOne({
+    response = await db.collection("messages").insertOne({
       message
     });
 
@@ -38,7 +39,7 @@ app.post('/messages', async (req, res) => {
     console.log("Error saving message to db, e=", e);
   }
 
-  res.status(200).json("success");
+  res.status(200).json(response.insertedId);
 });
 
 app.listen(PORT, () => {
