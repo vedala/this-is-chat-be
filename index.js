@@ -9,7 +9,7 @@ const mongoClient = new MongoClient(
 );
 
 await mongoClient.connect();
-const dbTemp = mongoClient.db("chatdb");
+const db = mongoClient.db("chatdb");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/messages', async (req, res) => {
-  const collection = dbTemp.collection("messages");
+  const collection = db.collection("messages");
   const documents = await collection.find({}).toArray();
 console.log(documents);
   res.json(documents);
@@ -29,13 +29,13 @@ app.post('/messages', async (req, res) => {
   console.log(`Received message: ${message}`);
 
   try {
-    const response = await dbTemp.collection("messages").insertOne({
+    const response = await db.collection("messages").insertOne({
       message
     });
 
     console.log("insertOne response=", response);
   } catch (e) {
-    console.log("Error saving message to dbTemp, e=", e);
+    console.log("Error saving message to db, e=", e);
   }
 
   res.status(200).json("success");
