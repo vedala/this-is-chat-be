@@ -16,5 +16,8 @@
     "mongodb": "^7.0.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.3"
   }
 }
