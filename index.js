@@ -17,10 +17,6 @@ const PORT = process.env.PORT || 4000;
 app.use(express.json());
 app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
 app.get('/messages', async (req, res) => {
   const collection = dbTemp.collection("messages");
   const documents = await collection.find({}).toArray();
