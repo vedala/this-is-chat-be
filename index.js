@@ -2,14 +2,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import cors from 'cors';
-import { MongoClient } from 'mongodb';
+import { connectDB, getDB } from './db.js';
 
-const mongoClient = new MongoClient(
-  `mongodb://${process.env.MONGO_ROOT_USERNAME}:${process.env.MONGO_ROOT_PASSWORD}@${process.env.MONGO_BASE_URL}`
-);
-
-await mongoClient.connect();
-const db = mongoClient.db("chatdb");
+await connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -18,7 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/messages', async (req, res) => {
-  const collection = db.collection("messages");
+  const collection = await getDB().collection("messages");
   const documents = await collection.find({}).toArray();
 console.log(documents);
   res.json(documents);
@@ -30,7 +25,7 @@ app.post('/messages', async (req, res) => {
 
   let response;
   try {
-    response = await db.collection("messages").insertOne({
+    response = await getDB().collection("messages").insertOne({
       message
     });
 
