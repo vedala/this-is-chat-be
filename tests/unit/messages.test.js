@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../app.js";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { connectDB, getDB } from "../../db.js";
+import { connectDB, getDB, closeDB } from "../../db.js";
 
 let mongo;
 
@@ -15,6 +15,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  await closeDB();
   if (mongo) await mongo.stop();
 });
 
@@ -22,9 +23,10 @@ describe("Express Chat App", () =>  {
 
     test("GET /messages returns all messages", async () => {
       const res = await request(app).get("/messages");
-console.log("res.body=", res.body);
+
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveLength(1);
       expect(res.body.find(item => item.message === 'a message')).toBeDefined();
     });
+
 });
