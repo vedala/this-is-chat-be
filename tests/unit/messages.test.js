@@ -9,9 +9,6 @@ beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
   const uri = mongo.getUri();
   await connectDB(uri);
-  const response = await getDB().collection("messages").insertOne({
-    message: "a message"
-  });
 });
 
 afterAll(async () => {
@@ -19,14 +16,41 @@ afterAll(async () => {
   if (mongo) await mongo.stop();
 });
 
+beforeEach(async () => {
+  await getDB().collection("messages").deleteMany({});
+
+  const messageData = [
+    { message: "message one" },
+    { message: "message two" },
+    { message: "message three" },
+  ];
+
+  await getDB().collection("messages").insertMany(messageData);
+});
+
 describe("Express Chat App", () =>  {
 
-    test("GET /messages returns all messages", async () => {
-      const res = await request(app).get("/messages");
+  test("GET /messages returns all messages", async () => {
+    const res = await request(app).get("/messages");
 
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body.find(item => item.message === 'a message')).toBeDefined();
-    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveLength(3);
+    expect(res.body.find(item => item.message === "message one")).toBeDefined();
+    expect(res.body.find(item => item.message === "message two")).toBeDefined();
+    expect(res.body.find(item => item.message === "message three")).toBeDefined();
+  });
+
+  test("POST /messages returns inserted message", async () => {
+    const res = await request(app)
+      .post("/messages")
+      .set('Content-Type', 'application/json')
+      .send({message: "another message"});
+
+    expect(res.statusCode).toBe(200);
+
+    const allMessages = await getDB().collection("messages").find({}).toArray();
+    expect(allMessages).toHaveLength(4);
+    expect(allMessages.find(item => item.message === "another message")).toBeDefined();
+  });
 
 });
