@@ -3,13 +3,15 @@ import express from 'express';
 import cors from 'cors';
 import { getDB } from './db.js';
 
+const MESSAGES_COLLECTION = process.env.MESSAGES_COLLECTION;
+
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
 app.get('/messages', async (req, res) => {
-  const collection = getDB().collection("messages");
+  const collection = getDB().collection(MESSAGES_COLLECTION);
   const documents = await collection.find({}).toArray();
 
   res.json(documents);
@@ -21,7 +23,7 @@ app.post('/messages', async (req, res) => {
 
   let response;
   try {
-    response = await getDB().collection("messages").insertOne({
+    response = await getDB().collection(MESSAGES_COLLECTION).insertOne({
       message
     });
 
