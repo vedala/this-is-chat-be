@@ -1,5 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { getDB } from './db.js';
@@ -10,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/messages', async (req, res) => {
-  const collection = await getDB().collection("messages");
+  const collection = getDB().collection("messages");
   const documents = await collection.find({}).toArray();
 console.log(documents);
   res.json(documents);

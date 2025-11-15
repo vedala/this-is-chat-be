@@ -3,10 +3,8 @@ import { MongoClient } from 'mongodb';
 let client;
 let db;
 
-export async function connectDB() {
-  client = new MongoClient(
-    `mongodb://${process.env.MONGO_ROOT_USERNAME}:${process.env.MONGO_ROOT_PASSWORD}@${process.env.MONGO_BASE_URL}`
-  );
+export async function connectDB(uri, dbName) {
+  client = new MongoClient(uri);
 
   await client.connect();
   db = client.db("chatdb");
