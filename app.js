@@ -11,7 +11,7 @@ app.use(cors());
 app.get('/messages', async (req, res) => {
   const collection = getDB().collection("messages");
   const documents = await collection.find({}).toArray();
-console.log(documents);
+
   res.json(documents);
 });
 
