@@ -7,7 +7,7 @@ export async function connectDB(uri, dbName) {
   client = new MongoClient(uri);
 
   await client.connect();
-  db = client.db("chatdb");
+  db = client.db(dbName);
 }
 
 export function getDB() {

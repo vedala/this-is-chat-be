@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 4000;
 
 await connectDB(
   `mongodb://${process.env.MONGO_ROOT_USERNAME}:${process.env.MONGO_ROOT_PASSWORD}@${process.env.MONGO_BASE_URL}`,
-  "chatdb"
+  process.env.MONGO_DB_NAME
 );
 
 app.listen(PORT, () => {
