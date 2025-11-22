@@ -26,6 +26,20 @@ wss.on("connection", async(ws) => {
     const saved = await getDB().collection(MESSAGES_COLLECTION).insertOne({
       message: msg.text
     });
+
+    const payload = JSON.stringify({
+      message: {
+        _id: saved.insertedId,
+        message: msg.text
+      }
+    });
+
+    wss.clients.forEach((client) => {
+      console.log("client,readyState=", client.readyState);
+      if (client.readyState === ws.OPEN) {
+        client.send(payload);
+      }
+    });
   });
 });
 
