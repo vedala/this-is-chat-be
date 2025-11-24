@@ -23,15 +23,20 @@ wss.on("connection", async(ws) => {
     const msg = JSON.parse(raw);
     console.log("Message event, msg=", msg);
 
-    const saved = await getDB().collection(MESSAGES_COLLECTION).insertOne({
-      message: msg.text
-    });
+    const messageObject = {
+      message: msg.text,
+      createdAt: new Date(),
+    };
+
+    const saved = await getDB().collection(MESSAGES_COLLECTION).insertOne(
+      messageObject
+    );
+
+    const messageForBroadcast = { ...messageObject };
+    messageForBroadcast["_id"]  = saved.insertedId;
 
     const payload = JSON.stringify({
-      message: {
-        _id: saved.insertedId,
-        message: msg.text
-      }
+      message: messageForBroadcast
     });
 
     wss.clients.forEach((client) => {
@@ -47,7 +52,10 @@ wss.on("connection", async(ws) => {
 
 app.get('/messages', async (req, res) => {
   const collection = getDB().collection(MESSAGES_COLLECTION);
-  const documents = await collection.find({}).toArray();
+  const documents = await collection
+    .find({})
+    .sort({ createdAt: 1 })
+    .toArray();
 
   res.json(documents);
 });
