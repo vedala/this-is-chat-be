@@ -45,12 +45,12 @@ wss.on("connection", async(ws) => {
 
 
 
-// app.get('/messages', async (req, res) => {
-//   const collection = getDB().collection(MESSAGES_COLLECTION);
-//   const documents = await collection.find({}).toArray();
+app.get('/messages', async (req, res) => {
+  const collection = getDB().collection(MESSAGES_COLLECTION);
+  const documents = await collection.find({}).toArray();
 
-//   res.json(documents);
-// });
+  res.json(documents);
+});
 
 // app.post('/messages', async (req, res) => {
 //   const { message } = req.body;
