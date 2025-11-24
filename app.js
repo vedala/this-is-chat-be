@@ -52,24 +52,6 @@ app.get('/messages', async (req, res) => {
   res.json(documents);
 });
 
-// app.post('/messages', async (req, res) => {
-//   const { message } = req.body;
-//   console.log(`Received message: ${message}`);
-
-//   let response;
-//   try {
-//     response = await getDB().collection(MESSAGES_COLLECTION).insertOne({
-//       message
-//     });
-
-//     console.log("insertOne response=", response);
-//   } catch (e) {
-//     console.log("Error saving message to db, e=", e);
-//   }
-
-//   res.status(200).json(response.insertedId);
-// });
-
 
 
 export default server;
