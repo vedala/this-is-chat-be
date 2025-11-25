@@ -25,6 +25,7 @@ wss.on("connection", async(ws) => {
 
     const messageObject = {
       message: msg.text,
+      userId: msg.userId,
       createdAt: new Date(),
     };
 
