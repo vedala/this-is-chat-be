@@ -1,7 +1,7 @@
-import jwt from "express-jwt";
+import { expressjwt } from "express-jwt";
 import jwks from "jwks-rsa";
 
-const checkJwt = jwt({
+const checkJwt = expressJwt({
   secret: jwks.expressJwtSecret({
     cache: true,
     rateLimit: true,
