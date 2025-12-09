@@ -4,6 +4,7 @@ import http from "http";
 import cors from 'cors';
 import { getDB } from './db.js';
 import { WebSocketServer } from 'ws';
+import checkJwt from './authenticate.js';
 
 const MESSAGES_COLLECTION = process.env.MESSAGES_COLLECTION;
 
@@ -51,7 +52,7 @@ wss.on("connection", async(ws) => {
 
 
 
-app.get('/messages', async (req, res) => {
+app.get('/messages', checkJwt, async (req, res) => {
   const collection = getDB().collection(MESSAGES_COLLECTION);
   const documents = await collection
     .find({})
