@@ -1,7 +1,7 @@
 import { expressjwt } from "express-jwt";
 import jwks from "jwks-rsa";
 
-const checkJwt = expressJwt({
+const checkJwt = expressjwt({
   secret: jwks.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -10,7 +10,7 @@ const checkJwt = expressJwt({
   }),
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-  algorithms: ["RSA256"],
+  algorithms: ["RS256"],
 });
 
 export default checkJwt;
