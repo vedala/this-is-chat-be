@@ -3,8 +3,10 @@ import express from 'express';
 import http from "http";
 import cors from 'cors';
 import { getDB } from './db.js';
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import checkJwt from './authenticate.js';
+import jwt from "jsonwebtoken";
+import jwks from "jwks-rsa";
 
 const MESSAGES_COLLECTION = process.env.MESSAGES_COLLECTION;
 
@@ -14,11 +16,61 @@ app.use(cors());
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+const jwksClient = jwks({
+  jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
+});
+
+function getKey(header, callback) {
+  jwksClient.getSigningKey(header.kid, function(err, key) {
+    if (err) {
+      callback(err);
+    } else {
+      const signingKey = key.getPublicKey();
+      callback(null, signingKey);
+    }
+  });
+}
+
+function verifyToken(token) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(
+      token,
+      getKey,
+      {
+        audience: process.env.AUTH0_AUDIENCE,
+        issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+        algorithms: ["RS256"],
+      },
+      (err, decoded) => {
+        if (err) reject(err);
+        else resolve(decoded);
+      }
+    );
+  });
+}
 
 
 console.log("about to setup wss");
-wss.on("connection", async(ws) => {
+wss.on("connection", async(ws, req) => {
   console.log("Client connected");
+
+  const [_, queryString] = req.url.split("?");
+  const params = new URLSearchParams(queryString);
+  const token = params.get("token");
+
+  if (!token) {
+    ws.close();
+    return;
+  }
+
+  try {
+    const user = await verifyToken(token);
+    ws.user = user;
+    console.log("ws authenticated user:", user.sub);
+  } catch (err) {
+    console.log("Invalid token:", err.message);
+    ws.close();
+  }
 
   ws.on("message", async (raw) => {
     const msg = JSON.parse(raw);
@@ -43,7 +95,7 @@ wss.on("connection", async(ws) => {
 
     wss.clients.forEach((client) => {
       console.log("client,readyState=", client.readyState);
-      if (client.readyState === ws.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(payload);
       }
     });
