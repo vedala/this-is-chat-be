@@ -53,13 +53,14 @@ function verifyToken(token) {
 console.log("about to setup wss");
 wss.on("connection", async(ws, req) => {
   console.log("Client connected");
+console.log("Clients:", wss.clients.size);
 
   const [_, queryString] = req.url.split("?");
   const params = new URLSearchParams(queryString);
   const token = params.get("token");
 
   if (!token) {
-    ws.close();
+    ws.close(4001, "Unauthorized");
     return;
   }
 
@@ -67,6 +68,14 @@ wss.on("connection", async(ws, req) => {
     const user = await verifyToken(token);
     ws.user = user;
     console.log("ws authenticated user:", user.sub);
+    const expiresAt = user.exp * 1000;
+    const timeout = setTimeout(() => {
+      ws.close(4002, "Token expired");
+    }, expiresAt - Date.now());
+
+    ws.on("close", () => {
+      clearTimeout(timeout);
+    });
   } catch (err) {
     console.log("Invalid token:", err.message);
     ws.close();
