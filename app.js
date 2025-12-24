@@ -7,6 +7,8 @@ import { WebSocketServer, WebSocket } from 'ws';
 import checkJwt from './authenticate.js';
 import jwt from "jsonwebtoken";
 import jwks from "jwks-rsa";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const MESSAGES_COLLECTION = process.env.MESSAGES_COLLECTION;
 
@@ -123,6 +125,12 @@ app.get('/messages', checkJwt, async (req, res) => {
   res.json(documents);
 });
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, "build")));
 
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 export default server;
