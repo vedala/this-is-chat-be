@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import jwks from "jwks-rsa";
 
 const MESSAGES_COLLECTION = process.env.MESSAGES_COLLECTION;
+const ROOMS_COLLECTION = process.env.ROOMS_COLLECTION;
 
 const app = express();
 app.use(express.json());
