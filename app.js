@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import jwks from "jwks-rsa";
 
 const MESSAGES_COLLECTION = process.env.MESSAGES_COLLECTION;
+const ROOMS_COLLECTION = process.env.ROOMS_COLLECTION;
 
 const app = express();
 app.use(express.json());
@@ -88,6 +89,7 @@ console.log("Clients:", wss.clients.size);
     const messageObject = {
       message: msg.text,
       userId: msg.userId,
+      room: msg.room,
       createdAt: new Date(),
     };
 
@@ -116,8 +118,18 @@ console.log("Clients:", wss.clients.size);
 app.get('/messages', checkJwt, async (req, res) => {
   const collection = getDB().collection(MESSAGES_COLLECTION);
   const documents = await collection
-    .find({})
+    .find({room: req.query.room})
     .sort({ createdAt: 1 })
+    .toArray();
+
+  res.json(documents);
+});
+
+app.get('/rooms', checkJwt, async (req, res) => {
+  const collection = getDB().collection(ROOMS_COLLECTION);
+  const documents = await collection
+    .find({})
+    .sort({ createdAt: 1})
     .toArray();
 
   res.json(documents);
