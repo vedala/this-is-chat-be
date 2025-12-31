@@ -89,6 +89,7 @@ console.log("Clients:", wss.clients.size);
     const messageObject = {
       message: msg.text,
       userId: msg.userId,
+      room: msg.room,
       createdAt: new Date(),
     };
 
