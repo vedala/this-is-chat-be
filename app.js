@@ -118,7 +118,7 @@ console.log("Clients:", wss.clients.size);
 app.get('/messages', checkJwt, async (req, res) => {
   const collection = getDB().collection(MESSAGES_COLLECTION);
   const documents = await collection
-    .find({})
+    .find({room: req.room})
     .sort({ createdAt: 1 })
     .toArray();
 
