@@ -123,4 +123,14 @@ app.get('/messages', checkJwt, async (req, res) => {
   res.json(documents);
 });
 
+app.get('/rooms', checkJwt, async (req, res) => {
+  const collection = getDB().collection(ROOMS_COLLECTION);
+  const documents = await collection
+    .find({})
+    .sort({ createdAt: 1})
+    .toArray();
+
+  res.json(documents);
+});
+
 export default server;
