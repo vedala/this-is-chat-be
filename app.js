@@ -135,4 +135,17 @@ app.get('/rooms', checkJwt, async (req, res) => {
   res.json(documents);
 });
 
+app.post('/rooms', checkJwt, async (req, res) => {
+  const collection = getDB().collection(ROOMS_COLLECTION);
+
+  const roomObject = {
+    ...req.body,
+    createdAt: new Date(),
+  };
+
+  const saved = await collection.insertOne(roomObject);
+
+  res.status(201).json({ _id: saved.insertedId, ...roomObject });
+});
+
 export default server;
