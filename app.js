@@ -113,7 +113,9 @@ console.log("Clients:", wss.clients.size);
   });
 });
 
-
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 app.get('/messages', checkJwt, async (req, res) => {
   const collection = getDB().collection(MESSAGES_COLLECTION);
